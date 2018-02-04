@@ -1,0 +1,22 @@
+body{
+  
+}
+svg{
+    margin: auto;
+    display: block;
+    margin-top: 100px;
+}
+.map{
+  
+}
+.countries {
+  fill: grey;
+}
+.country-borders {
+  fill: grey;
+}
+.meteorites{
+  fill: blue;
+  stroke: white;
+  opacity: 0.5;
+}

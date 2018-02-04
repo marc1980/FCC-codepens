@@ -1,0 +1,26 @@
+body{
+  background-color: #29c498;
+    display: flex;
+  justify-content: center; 
+}
+.game{
+}
+.containerSettingsScore{
+  font-family: Sans-serif;
+}
+.gameGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+  
+}
+.block{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  background-color: #90e5d4;
+  font-family: Sans-serif;
+  font-size: 40px;
+}

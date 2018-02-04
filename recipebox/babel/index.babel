@@ -1,0 +1,185 @@
+let { Button, ListGroup, ListGroupItem, Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter, FormGroup, FormControl, ControlLabel, Accordion, Panel} = ReactBootstrap;
+
+
+class RecipeBox extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      showModal: false,
+      currentRecipeId: null,
+      recipe: "",
+      ingredients: "",
+      recipes: []
+    }
+    this.openModal = this.openModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.handleChangeRecipeInput = this.handleChangeRecipeInput.bind(this);
+    this.handleChangeIngredientsInput = this.handleChangeIngredientsInput.bind(this);
+    this.handleSaveRecipe = this.handleSaveRecipe.bind(this);
+    this.handleEditRecipe = this.handleEditRecipe.bind(this);
+    this.handleDeleteRecipe = this.handleDeleteRecipe.bind(this);
+  }
+  
+ componentDidMount(){
+   let recipebook = [];
+   console.log(recipebook);
+   recipebook = JSON.parse(localStorage.getItem("recipebook"));
+   if(!recipebook){
+     recipebook = [{"recipename": "pasta", "ingredients": ["sliertjes", "saus", "groenten"]},
+                   {"recipename": "pizza", "ingredients": ["bodem", "saus", "groenten"]}    
+                  ]
+     localStorage.setItem("recipebook", JSON.stringify(recipebook));
+     }
+   console.log(recipebook);
+   this.setState({recipes: recipebook});
+ } 
+  openModal(){
+    this.setState({ showModal: true });
+  }
+  handleCloseModal(){
+    this.setState({ showModal: false, currentRecipeId: null, recipe: "", ingredients: "" });
+  }
+  handleChangeRecipeInput(recipeInput){
+    this.setState({recipe: recipeInput});
+  }
+  handleChangeIngredientsInput(ingredientsInput){
+    this.setState({ingredients: ingredientsInput});
+  }
+  handleSaveRecipe(){
+    let recipes = [];
+    recipes = this.state.recipes;
+    if(this.state.currentRecipeId === null){
+    recipes.push({"recipename": this.state.recipe , "ingredients":       this.state.ingredients.split(',')});
+    } else {
+    recipes[this.state.currentRecipeId].recipename = this.state.recipe;
+    recipes[this.state.currentRecipeId].ingredients =  this.state.ingredients.split(',');
+    }
+    this.setState({ showModal: false, currentRecipeId: null, recipe: "", ingredients: "", recipes: recipes });
+    localStorage.setItem("recipebook", JSON.stringify(this.state.recipes));
+   
+  }
+  handleEditRecipe(id){
+    this.setState({showModal: true, 
+                   currentRecipeId: id, 
+                   recipe: this.state.recipes[id].recipename, 
+                   ingredients: this.state.recipes[id].ingredients.join(', ') });
+   
+  }
+  handleDeleteRecipe(id){
+    let recipes = this.state.recipes.filter((recipe, index) => index !== id);    
+    localStorage.setItem("recipebook", JSON.stringify(recipes));
+    this.setState({recipes: recipes});
+  }
+  render(){
+    return (
+        <div className='RecipeBox'>
+          <h1>Recipe Box</h1>
+            <RecipeList 
+              recipes={this.state.recipes}
+              onClickDelete={this.handleDeleteRecipe}
+              onClickEdit={this.handleEditRecipe}
+              />
+        <Button bsStyle="primary" bsSize="large" onClick={this.openModal}>Add Recipe</Button>
+            <RecipeModal
+              recipe={this.state.recipe}
+              ingredients={this.state.ingredients}
+              handleChangeRecipe={this.handleChangeRecipeInput}
+              handleChangeIngredients={this.handleChangeIngredientsInput}
+              showModal={this.state.showModal}
+              onCloseModal={this.handleCloseModal}
+              onSaveRecipe={this.handleSaveRecipe}
+              />
+        </div>
+    );
+  }; 
+}
+
+const RecipeList = props => {
+        return (
+            <div>
+             <Accordion>
+                { 
+                    props.recipes.map( (recipe, index) => 
+                        <Panel header={recipe.recipename} eventKey={recipe.recipename}>
+                           <Button onClick={()=>props.onClickEdit(index)}>Edit</Button>
+                           <Button onClick={()=>props.onClickDelete(index)}>Delete</Button>
+                           <IngredientList ingredients={recipe.ingredients}/> 
+                        </Panel>
+                      )
+                }
+              </Accordion>
+            </div>
+        );
+}
+
+
+
+const IngredientList = props => {
+  return (
+      <div>
+        <ListGroup>
+          {
+            props.ingredients.map( (ingredient) =>
+               <ListGroupItem key={ingredient.id}>
+               {ingredient}
+               </ListGroupItem>
+               )
+          }
+              </ListGroup>
+      </div>
+  )
+}
+
+class RecipeModal extends React.Component {
+  constructor(props){
+    super(props);
+    this.onChangeRecipe = this.onChangeRecipe.bind(this);
+    this.onChangeIngredients = this.onChangeIngredients.bind(this);
+  }
+  onChangeRecipe(event){
+    this.props.handleChangeRecipe(event.target.value);
+  }
+  onChangeIngredients(event){
+    this.props.handleChangeIngredients( event.target.value);
+  }
+  render(){
+    return (
+      <div>
+       <Modal show={this.props.showModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add / Edit Recipe</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form>
+              <FormGroup>
+                <ControlLabel>Recipe name</ControlLabel>
+                <FormControl id="formRecipeName" 
+                             type="text" 
+                             placeholder="Enter recipe name" 
+                             value={this.props.recipe}
+                             onChange={this.onChangeRecipe}
+                 />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Ingredients (separated with comma)</ControlLabel>
+                <FormControl id="formIngredients" 
+                             type="text" 
+                             placeholder="Enter ingredients"
+                             value={this.props.ingredients}
+                             onChange={this.onChangeIngredients}
+                 />
+              </FormGroup>
+            </form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.props.onCloseModal}>Cancel</Button>
+            <Button onClick={this.props.onSaveRecipe}>Save</Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    );
+  }
+  
+}
+
+ReactDOM.render(<RecipeBox />, document.getElementById('content'));

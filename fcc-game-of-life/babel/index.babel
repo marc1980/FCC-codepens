@@ -1,0 +1,103 @@
+var genTimer;
+
+class GameOfLife extends React.Component {
+constructor(props){
+    super(props);
+    this.state = {
+      board: [],
+      isRunning: false,
+      generation: 0
+    };
+}
+componentDidMount(){
+  console.log("componentDidMount");
+  const width = 50;
+  const height = 30;
+  const boardSize = width * height;
+  let board = [];
+  for(let i = 0; i < boardSize; i++ ){
+    let random = Math.random() >= 0.5;
+    board.push(random);
+  }
+  this.setState({board: board});
+  this.handleStartPause();
+}
+handleGenerationUpdate(){
+  console.log("handleGenerationUpdate " + this.state.generation);
+  // conway's rules
+   let nextGen = this.state.generation += 1;
+   let nextGenBoard = this.state.board.map(function(cell, index, board){
+   let trueCount = 0
+   if(board[index -51] === true){trueCount+=1}
+   if(board[index -50] === true){trueCount+=1}
+   if(board[index -49] === true){trueCount+=1}
+   if(board[index -1] === true){trueCount+=1}
+   if(board[index +1] === true){trueCount+=1}
+   if(board[index +51] === true){trueCount+=1}
+   if(board[index +50] === true){trueCount+=1}
+   if(board[index +49] === true){trueCount+=1}
+   
+   // live cell, keeps alive with 2 or 3 living neighbours
+   if( cell === true && ( trueCount===2 || trueCount===3 )) return true;   
+   // dead cell, lives with 3 living neighbours 
+   else if( cell === false && trueCount===3 ) return true;
+   
+   else return false;
+  });
+  // update board and generation number in state
+  this.setState({board: nextGenBoard, generation: nextGen});
+}
+handleStartPause(){
+  if(this.state.isRunning === false){
+    this.setState({isRunning: true});
+    genTimer = setInterval(()=>this.handleGenerationUpdate(), 200);
+
+  }
+  else{
+    this.setState({isRunning: false});
+    clearInterval(genTimer);
+  }
+} 
+handleReset(){
+  this.setState({isRunning: false, generation: 0});
+  // setup board, 50 * 30 fixed for now
+  const width = 50;
+  const height = 30;
+  const boardSize = width * height;
+  let board = [];
+  for(let i = 0; i < boardSize; i++ ){
+    board.push(false);
+  }
+  this.setState({board: board});
+}  
+handleCellClick(id){
+  console.log("handleClick " + id);
+  let board = this.state.board;
+  board[id] = true;
+  this.setState({board: board});
+}
+render(){
+    return (
+      <div className="frame">
+        <div className="controlsContainer">
+        <button className="btn btn-primary" onClick={()=>this.handleStartPause()}>{this.state.isRunning ? "Pause" : "Start"}</button>
+        <button className="btn btn-primary" onClick={()=>this.handleReset()}>Reset</button>
+        <button className="btn btn-primary" onClick={()=>this.handleGenerationUpdate()}>Step</button>
+        <h3>Generation: {this.state.generation}</h3>
+        </div>
+            <div className="container">
+                {this.state.board.map((cell, index) => 
+                    <div className={cell ? "cell alive" : "cell dead"}
+                        key={index} 
+                   //     id={index} 
+                   //     status={cell} 
+                        onClick={()=>this.handleCellClick(index)}
+                    ></div>)
+                }
+        </div>   
+        </div>
+    );
+}
+}
+
+ReactDOM.render( <GameOfLife/>, document.getElementById('content'));

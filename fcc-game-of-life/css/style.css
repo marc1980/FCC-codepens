@@ -1,0 +1,42 @@
+.frame {
+  display: block;
+}
+
+.controlsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
+button {
+  margin: 10px;
+  width: 50px;
+}
+
+h3 {
+  font-family: sans-serif;
+}
+
+.container {
+  display: flex;
+  margin: auto;
+  flex-flow: row wrap;
+  max-width: 600px;
+}
+
+.cell {
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  width: 10px;
+  height: 10px;
+}
+
+.dead {
+  background-color: grey;
+}
+
+.alive {
+  background-color: blue;
+}

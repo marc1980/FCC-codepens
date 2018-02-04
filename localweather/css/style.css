@@ -1,0 +1,15 @@
+.container{
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+
+body{
+	font-family: "Helvetica Neue", "Helvetica", "sans-serif";
+}
+.col-xs-4{
+  padding: 10px;
+  border-left: 1px;
+}
+
+

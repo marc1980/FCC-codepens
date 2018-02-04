@@ -1,0 +1,16 @@
+body{
+  background-color: #e6e6e6
+}
+h1, h2{
+  text-align: center;
+  font-family: arial;
+}
+svg{
+  display: flex;
+  margin: auto;
+  margin-top: 100px; 
+  background-color: #cccccc
+}
+rect{
+  fill: #6495ed;
+}

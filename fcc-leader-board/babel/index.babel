@@ -1,0 +1,108 @@
+class FccLeaderBoard extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      users: []
+    }
+  }
+  getFccUsers(){
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://fcctop100.herokuapp.com/api/fccusers/top/recent');
+    xhr.send(null);
+    
+    xhr.onreadystatechange = () => {
+    var DONE = 4; // readyState 4 means the request is done.
+    var OK = 200; // status 200 is a successful return.
+    if (xhr.readyState === DONE) {
+      if (xhr.status === OK) {
+        //console.log(xhr.responseText); // 'This is the returned text.'
+        let users = JSON.parse(xhr.responseText);
+        this.setState({users: users});
+        this.sortAlltime();
+      }
+    }
+      else {
+      console.log('Error: ' + xhr.status); // An error occurred during the request.
+    }
+   }
+};
+  
+  sortAlltime() {
+    let sortedAlltime = this.state.users.slice();
+    sortedAlltime.sort((a,b)=>{ return b.alltime - a.alltime });
+    this.setState({users: sortedAlltime});
+   }
+  
+  sortRecent() {
+    let sortedRecent = this.state.users.slice();
+    sortedRecent.sort((a,b)=>{ return b.recent - a.recent });
+    this.setState({users: sortedRecent});
+  }
+  
+ componentDidMount(){
+   this.getFccUsers();
+
+ } 
+  render(){
+    const rows = this.state.users.map((user, index) => <FccLeaderTableRows rank={index + 1} key={user.username} img={user.img} user={user.username} alltime={user.alltime} recent={user.recent} />)
+    return (
+        <div className='FccLeaderTable'>
+        <table>
+          <thead>
+            <FccLeaderTableHeader 
+              users={this.props.users} 
+              onSortAlltime={() => this.sortAlltime()}
+              onSortRecent={() => this.sortRecent()}
+              />
+          </thead>
+          <tbody>
+            {rows}
+          </tbody>
+        </table>
+        </div>
+    );
+  };
+  
+}
+
+// Tabel header
+class FccLeaderTableHeader extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  handleSortAlltime() {
+    this.props.onSortAlltime();
+  }
+   handleSortRecent() {
+    this.props.onSortRecent();
+  }
+  render(){
+    return (
+    <tr>
+      <th>Rank</th>
+      <th>Username</th>
+      <th onClick={() => this.handleSortAlltime()}>Alltime</th>
+      <th onClick={() => this.handleSortRecent()}>Recent</th>
+    </tr>
+    );
+  }
+}
+
+// table row
+class FccLeaderTableRows extends React.Component {
+  render(){
+    return (
+    <tr>
+      <td>{this.props.rank}</td>
+        <td><a href={"https://www.freecodecamp.com/"+this.props.user} target="_blank">
+            <img src={this.props.img} className='userImg'/>
+            <span>{this.props.user}</span>
+          </a></td>
+      <td>{this.props.alltime}</td>
+      <td>{this.props.recent}</td>
+    </tr>
+    );
+  }
+}
+
+ReactDOM.render(<FccLeaderBoard />, document.getElementById('content'));

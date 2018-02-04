@@ -1,0 +1,14 @@
+body {
+  position: relative;
+  padding-top: 70px;
+}
+.socialContainer{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 400px;
+}
+.fa{
+  font-size:100px;
+  color:blue;
+}

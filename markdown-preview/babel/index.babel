@@ -1,0 +1,61 @@
+var initialText = 
+ `# header H1 size
+## a sub header H2 size
+
+- a list item
+
+> a blockquote
+    
+![an image](https://goo.gl/Umyytc)
+
+__and bolded text__
+ 
+a link [Markdown](https://en.wikipedia.org/wiki/Markdown)
+
+\`<p></p>\`
+
+    a code block:
+\`\`\`
+ReactDOM.render(<MarkdownPreview />, document.getElementById('content'));
+\`\`\`
+
+`
+
+class MarkdownPreview extends React.Component {
+  constructor(props){
+  super(props);
+  this.state = {
+    input: initialText
+    }
+    this.handleChange = this.handleChange.bind(this);
+  }
+  
+handleChange(event) {
+ this.setState({input: event.target.value});
+  }
+  
+getMarkdownText() {
+    var rawMarkup = marked(this.state.input, {sanitize: true});
+    return { __html: rawMarkup };
+  }  
+
+  render(){
+    return (
+      <div className='reactContainer'>
+        <div className='input'>
+      <p>input</p>
+          <textarea id="editor" rows="30" cols="80" value={this.state.input}
+          onChange={this.handleChange}>{this.state.input}</textarea>
+        </div>
+        <div className='preview'>
+      <p>preview</p>
+          <div id="preview" dangerouslySetInnerHTML={this.getMarkdownText()} />
+        </div>
+      </div>
+      
+    );
+   };
+}
+
+ReactDOM.render(<MarkdownPreview />, document.getElementById('content'));
+

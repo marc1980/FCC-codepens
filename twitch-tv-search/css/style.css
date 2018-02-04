@@ -1,0 +1,11 @@
+
+.channel-card{
+  border: solid 1px blue;
+  margin: 10px;
+  max-width: 400px;
+}
+.logo{
+  width: 75px;
+  height: 75px;
+  padding: 10px;
+}
